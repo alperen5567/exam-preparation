@@ -1,0 +1,32 @@
+# ===== Dockerfile.dev (development with hot-reload) =====
+FROM node:20
+
+WORKDIR /app
+ENV NODE_ENV=development
+
+# Prisma postinstall generate'i atla (install aşamasında schema daha kopyalı değil)
+ENV PRISMA_SKIP_POSTINSTALL_GENERATE=1
+
+# OpenSSL (Prisma engine'leri için)
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+# Global dev tools
+RUN npm i -g nodemon
+
+# 1) Yalnızca lock ve package dosyalarını kopyala
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+
+# 2) Install ama postinstall'ları ÇALIŞTIRMADAN
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable && pnpm i --frozen-lockfile --ignore-scripts; \
+  else npm ci --ignore-scripts; fi
+
+# 3) Artık tüm projeyi kopyala (schema.prisma da içeri girer)
+COPY . .
+
+# 4) Şimdi Prisma Client üret
+RUN npx prisma generate
+
+EXPOSE 4000
+CMD ["nodemon", "--watch", "src", "--ext", "ts,js,json", "--exec", "npm", "run", "dev"]

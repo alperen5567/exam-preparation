@@ -1,0 +1,93 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        surface: '#fbf8fa',
+        'surface-dim': '#dcd9db',
+        'surface-bright': '#fbf8fa',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#f5f3f4',
+        'surface-container': '#f0edef',
+        'surface-container-high': '#eae7e9',
+        'surface-container-highest': '#e4e2e3',
+        'on-surface': '#1b1b1d',
+        'on-surface-variant': '#45474c',
+        'inverse-surface': '#303032',
+        'inverse-on-surface': '#f3f0f2',
+        outline: '#75777d',
+        'outline-variant': '#c5c6cd',
+        'surface-tint': '#545f73',
+        primary: '#091426',
+        'on-primary': '#ffffff',
+        'primary-container': '#1e293b',
+        'on-primary-container': '#8590a6',
+        'inverse-primary': '#bcc7de',
+        secondary: '#0058be',
+        'on-secondary': '#ffffff',
+        'secondary-container': '#2170e4',
+        'on-secondary-container': '#fefcff',
+        tertiary: '#061623',
+        'on-tertiary': '#ffffff',
+        'tertiary-container': '#1c2a39',
+        'on-tertiary-container': '#8391a3',
+        error: '#ba1a1a',
+        'on-error': '#ffffff',
+        'error-container': '#ffdad6',
+        'on-error-container': '#93000a',
+        'primary-fixed': '#d8e3fb',
+        'primary-fixed-dim': '#bcc7de',
+        'on-primary-fixed': '#111c2d',
+        'on-primary-fixed-variant': '#3c475a',
+        'secondary-fixed': '#d8e2ff',
+        'secondary-fixed-dim': '#adc6ff',
+        'on-secondary-fixed': '#001a42',
+        'on-secondary-fixed-variant': '#004395',
+        'tertiary-fixed': '#d5e4f8',
+        'tertiary-fixed-dim': '#b9c8db',
+        'on-tertiary-fixed': '#0e1d2b',
+        'on-tertiary-fixed-variant': '#3a4858',
+        background: '#fbf8fa',
+        'on-background': '#1b1b1d',
+        'surface-variant': '#e4e2e3'
+      },
+      fontFamily: {
+        heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'headline-lg': ['32px', { lineHeight: '1.2', fontWeight: '600' }],
+        'headline-lg-mobile': ['28px', { lineHeight: '1.2', fontWeight: '600' }],
+        'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+        'body-lg': ['18px', { lineHeight: '1.6', fontWeight: '400' }],
+        'body-md': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
+        'label-sm': ['12px', { lineHeight: '1.4', letterSpacing: '0.05em', fontWeight: '600' }]
+      },
+      borderRadius: {
+        sm: '0.25rem',
+        DEFAULT: '0.5rem',
+        md: '0.75rem',
+        lg: '1rem',
+        xl: '1.5rem',
+        full: '9999px'
+      },
+      spacing: {
+        base: '8px',
+        xs: '4px',
+        sm: '12px',
+        md: '24px',
+        lg: '48px',
+        xl: '80px',
+        'container-max': '1280px',
+        gutter: '24px'
+      }
+    },
+  },
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
+}

@@ -1,0 +1,17 @@
+# Prevent sending unnecessary files to Docker build context
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store
+Dockerfile*
+.dockerignore
+.env
+.env.*
+.git
+.gitignore
+.vscode
+coverage
+uploads
+build
+.dist

@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// NOTE: If you prefer SQLite for first run, replace datasource with:
+/// datasource db {
+///   provider = "sqlite"
+///   url      = "file:./dev.db"
+/// }
+
+model User {
+  id           String   @id @default(uuid())
+  fullName     String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(STUDENT)
+  createdAt    DateTime @default(now())
+
+  courses          Course[]
+  memberships      CourseMembership[]
+  notes            Note[]
+  files            File[]
+  aiRequests       AIRequest[]
+  chatMessages     ChatMessage[]
+  timetableEntries TimetableEntry[]
+  aiOutputs        AiOutput[]
+}
+
+model Course {
+  id        String   @id @default(uuid())
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+  title     String
+  code      String?
+  semester  String?
+  createdAt DateTime @default(now())
+
+  notes        Note[]
+  files        File[]
+  memberships  CourseMembership[]
+  exams        Exam[]
+  chatMessages ChatMessage[]
+
+  @@index([ownerId])
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  title     String
+  content   String
+  isPrivate Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tags NoteTag[]
+
+  @@index([courseId])
+  @@index([authorId])
+}
+
+model File {
+  id            String   @id @default(uuid())
+  course        Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId      String
+  uploader      User     @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  uploaderId    String
+  fileName      String
+  mimeType      String
+  fileSizeBytes Int
+  storagePath   String
+  isPrivate     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  tags       FileTag[]
+  aiRequests AIRequest[]
+
+  @@index([courseId])
+  @@index([uploaderId])
+}
+
+model Tag {
+  id       String    @id @default(uuid())
+  label    String    @unique
+  noteTags NoteTag[]
+  fileTags FileTag[]
+}
+
+model NoteTag {
+  note   Note   @relation(fields: [noteId], references: [id])
+  noteId String
+  tag    Tag    @relation(fields: [tagId], references: [id])
+  tagId  String
+
+  @@id([noteId, tagId])
+}
+
+model FileTag {
+  file   File   @relation(fields: [fileId], references: [id])
+  fileId String
+  tag    Tag    @relation(fields: [tagId], references: [id])
+  tagId  String
+
+  @@id([fileId, tagId])
+}
+
+model CourseMembership {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model Exam {
+  id          String   @id @default(uuid())
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId    String
+  title       String
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@index([courseId])
+}
+
+model AIRequest {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  file      File?    @relation(fields: [fileId], references: [id], onDelete: SetNull)
+  fileId    String?
+  action    AIAction
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([fileId])
+}
+
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+enum AIAction {
+  SUMMARY
+  NOTES
+  QUIZ
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  role      String // "user" or "assistant"
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([courseId])
+  @@index([userId])
+}
+
+model TimetableEntry {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  title     String
+  dayOfWeek Int // 0-6 (Sun-Sat)
+  startTime String // HH:MM format
+  endTime   String // HH:MM format
+  color     String   @default("blue")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model AiOutput {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  type      String   // "summary", "notes", "quiz", "study_plan", "chat"
+  title     String
+  content   String
+  courseId  String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
